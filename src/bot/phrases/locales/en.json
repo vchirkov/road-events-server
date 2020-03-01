@@ -1,0 +1,19 @@
+{
+  "welcome_message": "\uD83D\uDC4B Welcome!",
+  "pin_patrol_message": "Please share your current geolocation with *\uD83D\uDE93 Pin Patrol*, when passing near patrol or add concrete location as shown on the picture.",
+  "pin_speed_cam_message": "Please share your current geolocation with *\uD83D\uDCF8 Pin Speed Cam*, when passing near cam or add concrete location as shown on the picture.",
+  "pin_accident_message": "Please share your current geolocation with *\uD83D\uDEA8 Pin Accident*, when passing near accident or add concrete location as shown on the picture.",
+  "pin_road_works_message": "Please share your current geolocation with *\uD83D\uDD27 Pin Road Works*, when passing near road works or add concrete location as shown on the picture.",
+  "back_message": "\uD83D\uDD19 Going back to main controls",
+  "fail_message": "Oops, something went wrong, try again, please",
+  "error_message": "Oops, something went wrong, try again, please",
+  "added_pin_message": "Thank you for contributing! \nYou are a road *hero*! \uD83C\uDFC5",
+  "---------------": "----------------",
+  "pin_patrol": "\uD83D\uDE93 Pin Patrol",
+  "pin_speed_cam": "\uD83D\uDCF8 Pin Speed Cam",
+  "pin_accident": "\uD83D\uDEA8 Pin Accident",
+  "pin_road_works": "\uD83D\uDD27 Pin Road Works",
+  "show_pins": "\uD83D\uDDFA️ Show Pins",
+  "back": "\uD83D\uDD19 Back",
+  "open_map": "\uD83D\uDDFA Open Map"
+}

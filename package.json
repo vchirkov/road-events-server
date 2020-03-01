@@ -1,0 +1,27 @@
+{
+  "name": "road-events-bot",
+  "version": "1.0.0",
+  "description": "add and check road events",
+  "main": "index.js",
+  "scripts": {
+    "start": "dotenv -e .env node src/index.js",
+    "start:dev": "dotenv -e .env.development npm run start",
+    "mongod": "mongod --config /usr/local/etc/mongod.conf",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "vchirkov@yahoo.com",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "dotenv-cli": "^2.0.1",
+    "express": "^4.17.1",
+    "express-history-api-fallback": "^2.2.1",
+    "i18n": "^0.8.3",
+    "ip": "^1.1.5",
+    "lodash": "^4.17.15",
+    "mongodb": "^3.3.2",
+    "node-telegram-bot-api": "^0.30.0"
+  }
+}
