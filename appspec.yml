@@ -4,6 +4,14 @@ files:
   - source: /
     destination: /var/www/road-events-server
     overwrite: true
+permissions:
+  - object: /var/www/road-events-server/scripts
+    pattern: "*.sh"
+    owner: root
+    group: root
+    mode: 755
+    type:
+      - file
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
