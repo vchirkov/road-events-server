@@ -7,6 +7,7 @@ npm cache clean -f
 sudo npm install n -g
 sudo n stable
 pm2 update
+touch asdf
 
 if [ -d "/var/www/road-events-server" ];then
     rm -rf /var/www/road-events-server
