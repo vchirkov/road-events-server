@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # This script is used to stop application
-pm2 stop road-events || true
+sudo pm2 stop road-events || true
