@@ -5,27 +5,24 @@ files:
     destination: /var/www/road-events-server
     overwrite: true
 permissions:
-  - object: /var/www/road-events-server/scripts
-    pattern: "*.sh"
-    owner: root
-    group: root
-    mode: 755
-    type:
-      - file
+  - object: /
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
       timeout: 300
-      runas: root
+      runas: ec2-user
   AfterInstall:
     - location: scripts/after_install.sh
       timeout: 300
-      runas: root
+      runas: ec2-user
   ApplicationStart:
     - location: scripts/app_start.sh
       timeout: 300
-      runas: root
+      runas: ec2-user
   ApplicationStop:
     - location: scripts/app_stop.sh
       timeout: 300
-      runas: root
+      runas: ec2-user
