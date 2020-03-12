@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # This script is executed before copying the source
-yum -y update
+sudo yum -y update
 
-curl --silent --location https://rpm.nodesource.com/setup_13.x | bash -
+curl -sL https://rpm.nodesource.com/setup_13.x | sudo bash -
 
-yum -y install nodejs
+sudo yum -y install nodejs
 
-npm install -g pm2
-pm2 update
+sudo npm install -g pm2
+sudo pm2 update
 
 if [ -d "/var/www/road-events-server" ];then
     rm -rf /var/www/road-events-server
