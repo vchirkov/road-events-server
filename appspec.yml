@@ -16,6 +16,7 @@ hooks:
       runas: ec2-user
   AfterInstall:
     - location: scripts/after_install.sh
+    - location: import_params.sh
       timeout: 300
       runas: ec2-user
   ApplicationStart:
