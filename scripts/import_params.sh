@@ -1,17 +1,14 @@
 #!/bin/bash
 
 # Set options
-#while getopts p:r: option
-#do
-#case "${option}"
-#in
-#p) PARAMETER_PATH=${OPTARG};;
-#r) REGION=${OPTARG};;
-#esac
-#done
-
-PARAMETER_PATH="/ENV";
-REGION="eu-central-1";
+while getopts p:r: option
+do
+case "${option}"
+in
+p) PARAMETER_PATH=${OPTARG};;
+r) REGION=${OPTARG};;
+esac
+done
 
 # Functions
 AWS=`which aws`
