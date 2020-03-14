@@ -1,11 +1,9 @@
 require('dotenv').config();
 
-// const app = require('./app');
-// const {botContext} = require('./bot');
-//
-// const {PORT} = process.env;
-//
-// botContext.start();
-// app.listen(PORT);
+const app = require('./app');
+const {botContext} = require('./bot');
 
-console.log(process.env.TELEGRAM_BOT_TOKEN);
+const {PORT} = process.env;
+
+botContext.start();
+app.listen(PORT);
