@@ -22,11 +22,11 @@ params_to_env () {
 
     # If .Tags does not exist we assume ssm Parameteres object.
     SELECTOR="Name"
-
+    cat .env
     for key in $(echo $params | /usr/bin/jq -r ".[][].${SELECTOR}"); do
                 value=$(echo $params | /usr/bin/jq -r ".[][] | select(.${SELECTOR}==\"$key\") | .Value")
                 key=$(echo "${key##*/}" | /usr/bin/tr ':' '_' | /usr/bin/tr '-' '_' | /usr/bin/tr '[:lower:]' '[:upper:]')
-                export $key="$value"
+                echo "$key=$value" > .env
                 echo "$key=$value"
     done
 }
