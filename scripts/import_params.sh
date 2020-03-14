@@ -10,6 +10,8 @@ r) REGION=${OPTARG};;
 esac
 done
 
+touch asddf
+
 # Functions
 AWS=`which aws`
 
