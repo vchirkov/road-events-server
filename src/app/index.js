@@ -9,4 +9,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', api);
 
+app.get('/', (req, res) => {
+    res.send('ok')
+});
+
+
 module.exports = app;
