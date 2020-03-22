@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Reference: https://github.com/lezavala/ec2-ssm-env
 # Set options
 while getopts p:r: option
 do
