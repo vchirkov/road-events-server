@@ -10,5 +10,8 @@ router.post(`/pins/add`, async (req, res) => {
     const pin = await locationDAO.addPin({type, coordinates}, req.session.user.id);
     res.send(pin);
 });
+router.post(`/pins/confirm`, async ({body, session}, res) => {
+    res.send(await locationDAO.confirmPin(body.id, session.user.id));
+});
 
 module.exports = router;

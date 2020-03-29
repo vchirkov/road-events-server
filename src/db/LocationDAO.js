@@ -16,6 +16,17 @@ module.exports = new class LocationDAO extends BaseDAO {
         ]);
     }
 
+    async relatePin(pin) {
+        if (!pin) {
+            return pin;
+        }
+        const fromPromise = this.userDAO.getUser(pin.from);
+        return {
+            ...pin,
+            from: await fromPromise
+        };
+    }
+
     async addPin({type, coordinates} = {}, from) {
         const {collection} = await this.dao;
 
@@ -26,6 +37,7 @@ module.exports = new class LocationDAO extends BaseDAO {
         const insert = {
             type,
             from,
+            created_at: Date.now(),
             updated_at: Date.now(),
             location: {
                 type: 'Point',
@@ -36,22 +48,35 @@ module.exports = new class LocationDAO extends BaseDAO {
             comments: []
         };
 
-        return (await collection.insertOne(insert)).ops[0];
+        return this.relatePin((await collection.insertOne(insert)).ops[0]);
     }
 
-    async addComment(_id, user_id, comment) {
+    async confirmPin(_id, from) {
         const {collection} = await this.dao;
+        const updated_at = Date.now();
 
-        return (await collection.findOneAndUpdate({_id},
-            {
-                updated_at: Date.now(),
-                $push: {comments: {user_id, comment}}
-            }
-        )).value;
+        await collection.findOneAndUpdate({
+            _id: ObjectId(_id),
+            'confirms.from': {$ne: from}
+        }, {
+            $set: {
+                updated_at
+            },
+            $push: {
+                confirms: {
+                    from,
+                    updated_at
+                }
+            },
+        }, {
+            returnOriginal: false
+        });
+
+        return this.getPin(_id);
     }
 
-    async getPins(extent) {
-        if (!extent || !extent.length) {// todo: log
+    async getPins(extent) {// TODO: projections
+        if (!extent || !extent.length) {
             return;
         }
 
@@ -71,14 +96,12 @@ module.exports = new class LocationDAO extends BaseDAO {
     }
 
     async getPin(_id) {
-        if (!_id) {// todo: log
+        if (!_id) {
             return null;
         }
 
         const {collection} = await this.dao;
 
-        const pin = await collection.findOne({_id: ObjectId(_id)});
-        pin.from = await this.userDAO.getUser(pin.from);
-        return pin;
+        return this.relatePin(await collection.findOne({_id: ObjectId(_id)}));
     }
 }();
