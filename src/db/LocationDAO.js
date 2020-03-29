@@ -2,21 +2,12 @@
  * Created by vlad.chirkov on 9/26/17.
  */
 const BaseDAO = require('./BaseDAO');
+const {ObjectId} = require('mongodb');
 
-const {
-    TYPE_PATROL,
-    TYPE_SPEED_CAM,
-    TYPE_ACCIDENT,
-    TYPE_ROAD_WORKS,
-    PATROL_TTL,
-    SPEED_CAM_TTL,
-    ACCIDENT_TTL,
-    ROAD_WORKS_TTL
-} = require('../bot/constants');
-
-module.exports = class LocationDAO extends BaseDAO {
+module.exports = new class LocationDAO extends BaseDAO {
     constructor(collectionName = 'locations') {
         super(collectionName);
+        this.userDAO = require('./UserDAO');
     }
 
     indexes({collection}) {
@@ -78,4 +69,16 @@ module.exports = class LocationDAO extends BaseDAO {
             }
         }).toArray();
     }
-};
+
+    async getPin(_id) {
+        if (!_id) {// todo: log
+            return null;
+        }
+
+        const {collection} = await this.dao;
+
+        const pin = await collection.findOne({_id: ObjectId(_id)});
+        pin.from = await this.userDAO.getUser(pin.from);
+        return pin;
+    }
+}();

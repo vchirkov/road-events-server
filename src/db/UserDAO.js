@@ -3,9 +3,7 @@
  */
 const BaseDAO = require('./BaseDAO');
 
-const {DB_USERS_COLLECTION} = process.env;
-
-module.exports = class StateDAO extends BaseDAO {
+module.exports = new class UserDAO extends BaseDAO {
     constructor(collectionName = 'users') {
         super(collectionName);
     }
@@ -47,4 +45,4 @@ module.exports = class StateDAO extends BaseDAO {
 
         return (await collection.findOne({id: parseInt(id, 10)}));
     }
-};
+}();

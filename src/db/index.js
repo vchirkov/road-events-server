@@ -1,3 +1,3 @@
-exports.locationDAO = new (require('./LocationDAO'))();
-exports.stateDAO = new (require('./StateDAO'))();
-exports.userDAO = new (require('./UserDAO'))();
+exports.locationDAO = require('./LocationDAO');
+exports.stateDAO = require('./StateDAO');
+exports.userDAO = require('./UserDAO');

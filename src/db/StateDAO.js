@@ -3,7 +3,7 @@
  */
 const BaseDAO = require('./BaseDAO');
 
-module.exports = class StateDAO extends BaseDAO {
+module.exports = new class StateDAO extends BaseDAO {
     constructor(collectionName = 'states') {
         super(collectionName);
     }
@@ -47,4 +47,4 @@ module.exports = class StateDAO extends BaseDAO {
 
         return (await collection.findOne({user_id, chat_id, message_id})) || {};
     }
-};
+}();
