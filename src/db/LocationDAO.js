@@ -75,7 +75,31 @@ module.exports = new class LocationDAO extends BaseDAO {
         return this.getPin(_id);
     }
 
-    async getPins(extent) {// TODO: projections
+    async rejectPin(_id, from) {
+        const {collection} = await this.dao;
+        const updated_at = Date.now();
+
+        await collection.findOneAndUpdate({
+            _id: ObjectId(_id),
+            'rejects.from': {$ne: from}
+        }, {
+            $set: {
+                updated_at
+            },
+            $push: {
+                rejects: {
+                    from,
+                    updated_at
+                }
+            },
+        }, {
+            returnOriginal: false
+        });
+
+        return this.getPin(_id);
+    }
+
+    async getPinsForExtent(extent) {// TODO: projections
         if (!extent || !extent.length) {
             return;
         }
@@ -92,7 +116,12 @@ module.exports = new class LocationDAO extends BaseDAO {
                     ]
                 }
             }
-        }).toArray();
+        })
+            .project({
+                type: 1,
+                location: 1
+            })
+            .toArray();
     }
 
     async getPin(_id) {
