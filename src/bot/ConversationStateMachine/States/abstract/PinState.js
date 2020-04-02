@@ -17,13 +17,13 @@ module.exports = class PinPatrolState extends State {
     }
 
     async handle(data, context) {
-        const {phrase, location, from} = data;
+        const {phrase, location, user_id} = data;
 
         const BackState = require('../BackState');
         const AddedPinState = require('../AddedPinState');
 
         if (location) {
-            const pin = await this.addPin(location, from);
+            const pin = await this.addPin(location, user_id);
             return new AddedPinState({pin_id: pin._id});
         } else if (phrase === 'back') {
             return new BackState();
