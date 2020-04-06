@@ -4,6 +4,13 @@
 const BaseDAO = require('./BaseDAO');
 const {ObjectId} = require('mongodb');
 
+const {
+    TYPE_ACCIDENT, ACCIDENT_TTL,
+    TYPE_ROAD_WORKS, ROAD_WORKS_TTL,
+    TYPE_SPEED_CAM, SPEED_CAM_TTL,
+    TYPE_PATROL, PATROL_TTL
+} = require('../constants');
+
 module.exports = new class LocationDAO extends BaseDAO {
     constructor(collectionName = 'locations') {
         super(collectionName);
@@ -99,24 +106,32 @@ module.exports = new class LocationDAO extends BaseDAO {
         return this.getPin(_id);
     }
 
-    async getPinsForExtent(extent) {// TODO: projections
+    async getPinsForExtent(extent) {
         if (!extent || !extent.length) {
             return;
         }
 
+        const now = Date.now();
         const {collection} = await this.dao;
         const [left, bottom, right, top] = extent;
 
-        return await collection.find({
-            location: {
-                $geoWithin: {
-                    $box: [
-                        [Number(left), Number(bottom)],
-                        [Number(right), Number(top)]
-                    ]
-                }
-            }
-        })
+        return await collection
+            .find({
+                location: {
+                    $geoWithin: {
+                        $box: [
+                            [Number(left), Number(bottom)],
+                            [Number(right), Number(top)]
+                        ]
+                    }
+                },
+                $or: [
+                    {$and: [{type: TYPE_ACCIDENT, updated_at: {$gt: now - ACCIDENT_TTL}}]},
+                    {$and: [{type: TYPE_ROAD_WORKS, updated_at: {$gt: now - ROAD_WORKS_TTL}}]},
+                    {$and: [{type: TYPE_SPEED_CAM, updated_at: {$gt: now - SPEED_CAM_TTL}}]},
+                    {$and: [{type: TYPE_PATROL, updated_at: {$gt: now - PATROL_TTL}}]}
+                ]
+            })
             .project({
                 type: 1,
                 location: 1
