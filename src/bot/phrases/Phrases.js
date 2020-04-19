@@ -20,7 +20,7 @@ module.exports = class Phrases {
     constructor(opts = {}) {
         const {
             defaultLocale = 'en',
-            directory = path.resolve(__dirname, './locales')
+            directory = path.resolve(__dirname, '../translations')
         } = opts;
 
         this.defaultLocale = defaultLocale;
