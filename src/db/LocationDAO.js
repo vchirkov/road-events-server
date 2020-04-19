@@ -27,7 +27,7 @@ module.exports = new class LocationDAO extends BaseDAO {
         if (!pin) {
             return pin;
         }
-        const fromPromise = this.userDAO.getUser(pin.from);
+        const fromPromise = this.userDAO.getUser({id: pin.from});
         return {
             ...pin,
             from: await fromPromise

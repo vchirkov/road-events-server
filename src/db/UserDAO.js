@@ -1,6 +1,7 @@
 /**
  * Created by vlad.chirkov on 9/26/17.
  */
+const {ObjectId} = require('mongodb');
 const BaseDAO = require('./BaseDAO');
 
 module.exports = new class UserDAO extends BaseDAO {
@@ -13,6 +14,22 @@ module.exports = new class UserDAO extends BaseDAO {
             collection.createIndex({id: 1}),
             collection.createIndex({username: 1})
         ]);
+    }
+
+    async generateToken({id}) {
+        if (!id) {
+            return null;
+        }
+
+        const {collection} = await this.dao;
+
+        const user = (await collection.findOneAndUpdate(
+            {id},
+            {$set: {token: ObjectId()}},
+            {returnOriginal: false}
+        )).value;
+
+        return user && user.token && user.token.toString();
     }
 
     async setUser({id, username, language_code}) {
@@ -30,19 +47,27 @@ module.exports = new class UserDAO extends BaseDAO {
         };
         const options = {
             returnOriginal: false,
-            upsert: true
+            upsert: true,
+            projection: {
+                token: 0
+            }
         };
 
         return (await collection.findOneAndUpdate({id}, {$set: update}, options)).value;
     }
 
-    async getUser(id) {
-        if (!id) {
+    async getUser({id, token}) {
+        if (!id && !token) {
             return null;
         }
 
         const {collection} = await this.dao;
 
-        return (await collection.findOne({id: parseInt(id, 10)}));
+        const filter = token ? {token: ObjectId(token)} : {id: parseInt(id, 10)};
+
+        return (await collection.findOne(
+            filter,
+            {projection: {token: false}}
+        ));
     }
 }();

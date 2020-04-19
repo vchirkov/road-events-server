@@ -4,9 +4,8 @@ const {userDAO} = require('../../db');
 const router = new Router();
 
 router.use(async function (req, res, next) {
-    //TODO: redo on token
     const token = req.get('authorization');
-    const user = await userDAO.getUser(token);
+    const user = await userDAO.getUser({token});
     if (!user) {
         return res.sendStatus(401);
     }
