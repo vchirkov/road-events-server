@@ -8,7 +8,8 @@ const {
     TYPE_ACCIDENT, ACCIDENT_TTL,
     TYPE_ROAD_WORKS, ROAD_WORKS_TTL,
     TYPE_SPEED_CAM, SPEED_CAM_TTL,
-    TYPE_PATROL, PATROL_TTL
+    TYPE_PATROL, PATROL_TTL,
+    REJECTS_NUMBER, REJECTS_TTL
 } = require('../constants');
 
 module.exports = new class LocationDAO extends BaseDAO {
@@ -79,7 +80,7 @@ module.exports = new class LocationDAO extends BaseDAO {
             returnOriginal: false
         });
 
-        return this.getPin(_id);
+        return this.getPin(_id, from);
     }
 
     async rejectPin(_id, from) {
@@ -95,15 +96,19 @@ module.exports = new class LocationDAO extends BaseDAO {
             },
             $push: {
                 rejects: {
-                    from,
-                    updated_at
+                    $each: [{
+                        from,
+                        updated_at
+                    }],
+                    $sort: {updated_at: 1},
+                    $slice: REJECTS_NUMBER
                 }
             },
         }, {
             returnOriginal: false
         });
 
-        return this.getPin(_id);
+        return this.getPin(_id, from);
     }
 
     async getPinsForExtent(extent) {
@@ -125,6 +130,7 @@ module.exports = new class LocationDAO extends BaseDAO {
                         ]
                     }
                 },
+                // [`rejects.[${REJECTS_NUMBER - 1}.updated_at`]: {$gt: now - REJECTS_TTL},
                 $or: [
                     {$and: [{type: TYPE_ACCIDENT, updated_at: {$gt: now - ACCIDENT_TTL}}]},
                     {$and: [{type: TYPE_ROAD_WORKS, updated_at: {$gt: now - ROAD_WORKS_TTL}}]},
@@ -139,13 +145,25 @@ module.exports = new class LocationDAO extends BaseDAO {
             .toArray();
     }
 
-    async getPin(_id) {
-        if (!_id) {
+    async getPin(_id, from) {
+        if (!_id || !from) {
             return null;
         }
 
         const {collection} = await this.dao;
+        const [pin] = await collection.aggregate([
+            {$match: {_id: ObjectId(_id)}},
+            {
+                $addFields: {
+                    confirmed: {$in: [from, '$confirms.from']},
+                    rejected: {$in: [from, '$rejects.from']}
+                }
+            },
+            {
+                $unset: ['confirms', 'rejects']
+            }
+        ]).toArray();
 
-        return this.relatePin(await collection.findOne({_id: ObjectId(_id)}));
+        return this.relatePin(pin);
     }
 }();

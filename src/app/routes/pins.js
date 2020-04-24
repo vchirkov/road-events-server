@@ -3,7 +3,7 @@ const {locationDAO} = require('../../db');
 
 const router = new Router();
 
-router.get(`/pins/:id`, async (req, res) => res.send(await locationDAO.getPin(req.params.id)));
+router.get(`/pins/:id`, async (req, res) => res.send(await locationDAO.getPin(req.params.id, req.session.user.id)));
 router.get(`/pins`, async (req, res) => res.send(await locationDAO.getPinsForExtent(req.query.extent)));
 router.post(`/pins/add`, async (req, res) => {
     const {type, coordinates} = req.body;
