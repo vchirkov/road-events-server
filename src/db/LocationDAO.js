@@ -9,8 +9,16 @@ const {
     TYPE_ROAD_WORKS, ROAD_WORKS_TTL,
     TYPE_SPEED_CAM, SPEED_CAM_TTL,
     TYPE_PATROL, PATROL_TTL,
-    REJECTS_NUMBER, REJECTS_TTL
+    REJECTS_NUMBER, REJECTS_TTL,
+    DETECTION_RADIUS, PIN_MAX_RADIUS
 } = require('../constants');
+
+const TYPE_TTL_MAP = {
+    [TYPE_ACCIDENT]: ACCIDENT_TTL,
+    [TYPE_ROAD_WORKS]: ROAD_WORKS_TTL,
+    [TYPE_SPEED_CAM]: SPEED_CAM_TTL,
+    [TYPE_PATROL]: PATROL_TTL,
+};
 
 module.exports = new class LocationDAO extends BaseDAO {
     constructor(collectionName = 'locations') {
@@ -36,22 +44,28 @@ module.exports = new class LocationDAO extends BaseDAO {
     }
 
     async addPin({type, coordinates} = {}, from) {
+        if (!coordinates || !type) null;
+
         const {collection} = await this.dao;
 
-        if (!coordinates || !type) {// todo: log
-            return null;
+        const [pin] = await this.getPinsForRadius(coordinates, PIN_MAX_RADIUS, type);
+
+        if (pin) {
+            return this.confirmPin(pin._id, from);
         }
+
+        const now = Date.now();
 
         const insert = {
             type,
             from,
-            created_at: Date.now(),
-            updated_at: Date.now(),
+            created_at: now,
+            updated_at: now,
             location: {
                 type: 'Point',
-                coordinates: [...coordinates]
+                coordinates
             },
-            confirms: [],
+            confirms: [{from, updated_at: now}],
             rejects: [],
             comments: []
         };
@@ -99,9 +113,7 @@ module.exports = new class LocationDAO extends BaseDAO {
                     $each: [{
                         from,
                         updated_at
-                    }],
-                    $sort: {updated_at: 1},
-                    $slice: REJECTS_NUMBER
+                    }]
                 }
             },
         }, {
@@ -112,37 +124,38 @@ module.exports = new class LocationDAO extends BaseDAO {
     }
 
     async getPinsForExtent(extent) {
-        if (!extent || !extent.length) {
-            return;
-        }
+        if (!extent || !extent.length) return;
 
-        const now = Date.now();
         const {collection} = await this.dao;
         const [left, bottom, right, top] = extent;
 
         return await collection
-            .find({
-                location: {
-                    $geoWithin: {
-                        $box: [
-                            [Number(left), Number(bottom)],
-                            [Number(right), Number(top)]
-                        ]
+            .aggregate([
+                ...this._aggregateExtent(left, bottom, right, top),
+                ...this._aggregateRejected(),
+                {
+                    $project: {
+                        type: 1,
+                        location: 1
                     }
-                },
-                // [`rejects.[${REJECTS_NUMBER - 1}.updated_at`]: {$gt: now - REJECTS_TTL},
-                $or: [
-                    {$and: [{type: TYPE_ACCIDENT, updated_at: {$gt: now - ACCIDENT_TTL}}]},
-                    {$and: [{type: TYPE_ROAD_WORKS, updated_at: {$gt: now - ROAD_WORKS_TTL}}]},
-                    {$and: [{type: TYPE_SPEED_CAM, updated_at: {$gt: now - SPEED_CAM_TTL}}]},
-                    {$and: [{type: TYPE_PATROL, updated_at: {$gt: now - PATROL_TTL}}]}
-                ]
-            })
-            .project({
-                type: 1,
-                location: 1
-            })
+                }
+            ])
             .toArray();
+    }
+
+    async getPinsForRadius(coordinates, radius = DETECTION_RADIUS, type) {
+        if (!coordinates) return;
+
+        const {collection} = await this.dao;
+
+        return collection.aggregate(
+            [
+                ...this._aggregateNear(coordinates, radius),
+                {
+                    $match: type ? this._matchTypeTTL(type) : this._matchTTL()
+                }
+            ]
+        ).toArray();
     }
 
     async getPin(_id, from) {
@@ -165,5 +178,92 @@ module.exports = new class LocationDAO extends BaseDAO {
         ]).toArray();
 
         return this.relatePin(pin);
+    }
+
+    _matchBox(left, bottom, right, top) {
+        return {
+            location: {
+                $geoWithin: {
+                    $box: [
+                        [Number(left), Number(bottom)],
+                        [Number(right), Number(top)]
+                    ]
+                }
+            }
+        };
+    }
+
+    _aggregateNear(coordinates, maxDistance) {
+        return [{
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates
+                },
+                distanceField: 'dist',
+                maxDistance
+            }
+        }];
+    }
+
+    _matchTypeTTL(type) {
+        const now = Date.now();
+
+        return {
+            $and: [{type, updated_at: {$gt: now - TYPE_TTL_MAP[type]}}]
+        };
+    }
+
+    _matchTTL() {
+        const now = Date.now();
+        return {
+            $or: [
+                {$and: [{type: TYPE_ACCIDENT, updated_at: {$gt: now - ACCIDENT_TTL}}]},
+                {$and: [{type: TYPE_ROAD_WORKS, updated_at: {$gt: now - ROAD_WORKS_TTL}}]},
+                {$and: [{type: TYPE_SPEED_CAM, updated_at: {$gt: now - SPEED_CAM_TTL}}]},
+                {$and: [{type: TYPE_PATROL, updated_at: {$gt: now - PATROL_TTL}}]}
+            ]
+        };
+    }
+
+    _aggregateExtent(left, bottom, right, top) {
+        return [
+            {
+                $match: {
+                    $and: [
+                        this._matchBox(left, bottom, right, top),
+                        this._matchTTL()
+                    ]
+                }
+            }
+        ];
+    }
+
+    _aggregateRejected() {
+        const now = Date.now();
+
+        return [
+            {
+                $set: {
+                    rejects: {
+                        $filter: {
+                            input: '$rejects',
+                            as: 'reject',
+                            cond: {$gt: ['$$reject.updated_at', now - REJECTS_TTL]}
+                        }
+                    },
+                }
+            },
+            {
+                $set: {
+                    rejected: {$gte: [{$size: '$rejects'}, REJECTS_NUMBER]}
+                }
+            },
+            {
+                $match: {
+                    rejected: false
+                }
+            }
+        ];
     }
 }();
