@@ -153,6 +153,12 @@ module.exports = new class LocationDAO extends BaseDAO {
                 ...this._aggregateNear(coordinates, radius),
                 {
                     $match: type ? this._matchTypeTTL(type) : this._matchTTL()
+                },
+                {
+                    $project: {
+                        type: 1,
+                        location: 1
+                    }
                 }
             ]
         ).toArray();
@@ -193,7 +199,13 @@ module.exports = new class LocationDAO extends BaseDAO {
         };
     }
 
-    _aggregateNear(coordinates, maxDistance) {
+    _aggregateNear([long, lat], maxDistance) {
+        const coordinates = [
+            parseFloat(long),
+            parseFloat(lat)
+        ];
+
+
         return [{
             $geoNear: {
                 near: {

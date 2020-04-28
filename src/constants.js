@@ -1,6 +1,6 @@
 module.exports = {
-    PIN_MAX_RADIUS: 100,
-    DETECTION_RADIUS: 200,
+    PIN_MAX_RADIUS: 200,
+    DETECTION_RADIUS: 400,
 
     TYPE_PATROL: 'patrol',
     TYPE_SPEED_CAM: 'speed_cam',
