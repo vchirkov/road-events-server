@@ -16,8 +16,8 @@ module.exports = new class StateDAO extends BaseDAO {
         ]);
     }
 
-    async setState({user_id, chat_id, message_id}, state) {
-        if (!(user_id || chat_id) && !message_id || !state) {
+    async setState({user_id, chat_id, message_id}, State, meta) {
+        if (!(user_id || chat_id) && !message_id || !State) {
             return null;
         }
 
@@ -26,8 +26,8 @@ module.exports = new class StateDAO extends BaseDAO {
         const update = {
             user_id,
             chat_id,
-            name: state.name,
-            data: state.data,
+            name: State.name,
+            meta,
             updated_at: Date.now()
         };
         const options = {
