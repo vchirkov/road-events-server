@@ -9,6 +9,9 @@ const context = new Dialog(bot, [
         require('./Conversation/States/DefaultState'),
         require('./Conversation/States/PinState'),
         require('./Conversation/States/ShowPinsState'),
+        require('./Conversation/States/instruction/InstructionWelcomeState'),
+        require('./Conversation/States/instruction/InstructionMapState'),
+        require('./Conversation/States/instruction/InstructionGeoState'),
     ],
     require('./Conversation/States/InitalState'),
     require('./Conversation/States/ErrorState')

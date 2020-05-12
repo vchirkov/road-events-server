@@ -25,10 +25,6 @@ module.exports = class State {
         return bot.sendMessage(msg.chat.id, translate(message, locale), form);
     }
 
-    async transitTo(State, meta) {
-        return this.context.transitTo(State, meta, this.data);
-    }
-
     async sendGame(name, keyboard, state) {
         const {bot, msg, locale} = this.data;
 
@@ -41,5 +37,9 @@ module.exports = class State {
         const {message_id} = await bot.sendGame(msg.chat.id, name, form);
 
         return await this.context.saveQueryState(message_id, state);
+    }
+
+    async transitTo(State, meta) {
+        return this.context.transitTo(State, meta, this.data);
     }
 };

@@ -1,5 +1,10 @@
 {
-  "welcome_message": "\uD83D\uDC4B Welcome!",
+  "instruction_welcome": "👋 *Welcome*! \n\nThis bot allows you to track Road Police and other road events straight from this chat! \n\nPress next to fnd out how to work with it!",
+  "instruction_geo": "*Please, make sure Telegram has access to geo services* \n\nService heavily relies on geoservces. We need you to gve Telegram access to your geopositon. With this we would be able to show events near you. \n\nNo worries though, geopositon will only be used when you use the map application and only after you gave your consent!",
+  "instruction_map": "How about we check if there are any events nearby? \n\nPlease, press '🗺️ *Open Map*' for this.",
+  "instruction_open_map": "Now you will be able to open map right in Telegram with no extra actions or authentication! Please, click '🗺 *Open Map*' on this new window! \n\nPress next to learn how to send pins directly from chat!",
+  "instruction_set_from_chat": "Choose event type bellow, for instance '*🚓 Road Police*'. If you click '*🚓 Road Police*' once again, you will send your current geolocation! \n\nThat's all you need to know, :) \n\nBe careful on the roads!",
+  "instruction_skip": "Agreed, who needs the instructions, easier to find out everything yourself!",
   "pin_patrol_message": "Please share your current geolocation with *\uD83D\uDE93 Pin Patrol*, when passing near patrol or add concrete location as shown on the picture.",
   "pin_speed_cam_message": "Please share your current geolocation with *\uD83D\uDCF8 Pin Speed Cam*, when passing near cam or add concrete location as shown on the picture.",
   "pin_accident_message": "Please share your current geolocation with *\uD83D\uDEA8 Pin Accident*, when passing near accident or add concrete location as shown on the picture.",
@@ -8,11 +13,13 @@
   "fail_message": "Oops, something went wrong, try again, please",
   "error_message": "Oops, something went wrong, try again, please",
   "added_pin_message": "Thank you for contributing! \nYou are a road *hero*! \uD83C\uDFC5",
-  "pin_patrol": "\uD83D\uDE93 Pin Patrol",
-  "pin_speed_cam": "\uD83D\uDCF8 Pin Speed Cam",
-  "pin_accident": "\uD83D\uDEA8 Pin Accident",
-  "pin_road_works": "\uD83D\uDD27 Pin Road Works",
+  "pin_patrol": "\uD83D\uDE93 Road Police",
+  "pin_speed_cam": "\uD83D\uDCF8 Speed Cam",
+  "pin_accident": "\uD83D\uDEA8 Accident",
+  "pin_road_works": "\uD83D\uDD27 Road Works",
   "show_pins": "\uD83D\uDDFA️ Show Pins",
   "back": "\uD83D\uDD19 Back",
-  "open_map": "\uD83D\uDDFA Open Map"
+  "open_map": "\uD83D\uDDFA Open Map",
+  "next": "➡️ Next",
+  "skip": "↪️ Skip"
 }

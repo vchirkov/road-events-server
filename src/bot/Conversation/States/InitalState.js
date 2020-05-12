@@ -1,10 +1,10 @@
 const State = require('./State');
 
-const initialKeyboard = require('../../keyboards/initial');
+const instructionGeneric = require('../../keyboards/instructionGeneric');
 
 module.exports = class IntialState extends State {
     async handle() {
-        await this.sendMessage('welcome_message', initialKeyboard);
-        await this.transitTo(require('./DefaultState'));
+        await this.sendMessage('instruction_welcome', instructionGeneric);
+        await this.transitTo(require('./instruction/InstructionWelcomeState'));
     }
 };

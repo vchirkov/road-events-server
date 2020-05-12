@@ -85,7 +85,7 @@ module.exports = class Dialog {
 
             await currentState.handle();
         } catch (e) {
-            const errorState = new this.ErrorState();
+            const errorState = new this.ErrorState(data, this);
             errorState.handle(e);
             console.error(e.message);
         }
