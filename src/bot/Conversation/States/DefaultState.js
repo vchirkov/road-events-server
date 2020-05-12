@@ -1,3 +1,9 @@
+const fs = require('fs');
+const util = require('util');
+const path = require('path');
+
+const readFile = util.promisify(fs.readFile);
+
 const State = require('./State');
 
 const initialKeyboard = require('../../keyboards/initial');
@@ -34,9 +40,23 @@ module.exports = class DefaultState extends State {
             case 'show_pins':
                 await this.sendGame(APP_NAME, openMapKeyboard, require('./ShowPinsState'));
                 return;
+            case 'help':
+                await this.sendHelp();
+                return;
             default:
                 await this.sendMessage('error_message', initialKeyboard);
                 return;
         }
+    }
+
+    async sendHelp() {
+        await this.sendMessage('help_geolocation');
+        await this.sendMessage('help_geolocation_ios');
+        await this.sendMessage('help_geolocation_android');
+        await this.sendMessage('help_no_controls');
+        await this.sendImage(await readFile(path.join(__dirname, './img/switch_kb.png')));
+        await this.sendMessage('help_no_controls_end');
+        await this.sendMessage('help_send_event');
+        await this.sendMessage('help_restart');
     }
 };

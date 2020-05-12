@@ -14,15 +14,21 @@ module.exports = class State {
     async sendMessage(message, keyboard) {
         const {bot, msg, locale} = this.data;
 
-        const form = keyboard ? {
-            reply_markup: {
+        const form = {
+            reply_markup: keyboard ? {
                 keyboard: keyboard(locale),
                 resize_keyboard: true
-            },
+            } : undefined,
             parse_mode: 'Markdown'
-        } : undefined;
+        };
 
         return bot.sendMessage(msg.chat.id, translate(message, locale), form);
+    }
+
+    async sendImage(image) {
+        const {bot, msg, locale} = this.data;
+
+        return bot.sendPhoto(msg.chat.id, image);
     }
 
     async sendGame(name, keyboard, state) {

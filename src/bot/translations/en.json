@@ -5,6 +5,13 @@
   "instruction_open_map": "Now you will be able to open map right in Telegram with no extra actions or authentication! Please, click '🗺 *Open Map*' on this new window! \n\nPress next to learn how to send pins directly from chat!",
   "instruction_set_from_chat": "Choose event type bellow, for instance '*🚓 Road Police*'. If you click '*🚓 Road Police*' once again, you will send your current geolocation! \n\nThat's all you need to know, :) \n\nBe careful on the roads!",
   "instruction_skip": "Agreed, who needs the instructions, easier to find out everything yourself!",
+  "help_geolocation": "1. Service won't work properly without Telegram having access to geolocation services. \n\nPlease make sure it has the rights to use it \n\n Here are useful links:",
+  "help_geolocation_ios": "[IOS](https://support.apple.com/en-us/HT207092)",
+  "help_geolocation_android": "[Android](https://support.google.com/nexus/answer/6179507?hl=en)",
+  "help_no_controls": "2. It might happen, that for some reason you don't see the controls. \nIn this case, please, check right side of message input:",
+  "help_no_controls_end": "Clicking the highlighted control should switch you from classic keyboard to button keyboard",
+  "help_send_event": "3. If you want to send an event from chat, please, choose event type bellow, for instance '*\uD83D\uDE93 Road Police*'. If you click '*\uD83D\uDE93 Road Police*' once again, you will send your current geolocation!",
+  "help_restart": "4. If you experience problems wth either application or the bot itself, please click or enter /start to reboot the bot for you.",
   "pin_patrol_message": "Please share your current geolocation with *\uD83D\uDE93 Pin Patrol*, when passing near patrol or add concrete location as shown on the picture.",
   "pin_speed_cam_message": "Please share your current geolocation with *\uD83D\uDCF8 Pin Speed Cam*, when passing near cam or add concrete location as shown on the picture.",
   "pin_accident_message": "Please share your current geolocation with *\uD83D\uDEA8 Pin Accident*, when passing near accident or add concrete location as shown on the picture.",
@@ -21,5 +28,6 @@
   "back": "\uD83D\uDD19 Back",
   "open_map": "\uD83D\uDDFA Open Map",
   "next": "➡️ Next",
-  "skip": "↪️ Skip"
+  "skip": "↪️ Skip",
+  "help": "ℹ️️ [Help]"
 }
