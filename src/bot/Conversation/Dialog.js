@@ -1,11 +1,20 @@
+const {version} = require('../../../package');
+const chatbase = require('@google/chatbase');
 const {stateDAO, userDAO} = require('../../db');
 const {revert, translate} = require('../phrases');
+
+const {CHATBASE_KEY} = process.env;
 
 module.exports = class Dialog {
     constructor(bot, states = [], InitialState, ErrorState) {
         this.bot = bot;
         this.stateDAO = stateDAO;
         this.userDAO = userDAO;
+
+        this.chatbase = chatbase
+            .setApiKey(CHATBASE_KEY)
+            .setPlatform('Telegram')
+            .setVersion(version);
 
         this.started = false;
         this.states = {};
@@ -45,11 +54,14 @@ module.exports = class Dialog {
         const message_id = msg.message_id;
         const user_id = query && query.from.id || msg.from.id;
         const chat_id = msg.chat.id;
-        const location = msg.location;
-        const locale = msg.from.language_code;
+        const locale = query && query.from.language_code || msg.from.language_code;
         const bot = this.bot;
 
         const phrase = revert(msg.text, locale) || msg.text;
+
+        const text = msg.text;
+        const location = msg.location;
+        const game = query && query.game_short_name;
 
         const data = {
             msg,
@@ -57,9 +69,11 @@ module.exports = class Dialog {
             message_id,
             user_id,
             chat_id,
-            location,
-            phrase,
             locale,
+            phrase,
+            text,
+            location,
+            game,
             bot,
             context: this
         };
@@ -69,6 +83,8 @@ module.exports = class Dialog {
         let currentState;
 
         try {
+            await this.trackUser(data);
+
             if (msg.text === '/start') {
                 currentState = new this.InitialState(data, this);
             } else if (msg.game) {
@@ -106,6 +122,7 @@ module.exports = class Dialog {
     async transitTo({State, meta}, data) {
         const {user_id, chat_id} = data;
         await this.stateDAO.setState({user_id, chat_id}, State, meta);
+        await this.trackBot({State}, data);
     }
 
     async sendMessage({message, keyboard}, data) {
@@ -140,5 +157,55 @@ module.exports = class Dialog {
         const {message_id} = await this.bot.sendGame(msg.chat.id, name, form);
 
         return await this.saveQueryState(message_id, State);
+    }
+
+    async trackUser(data) {
+        const {
+            message_id,
+            user_id,
+            text,
+            phrase,
+            image,
+            location,
+            game
+        } = data;
+
+        let message;
+        let intent;
+
+        if (text) {
+            intent = phrase;
+            message = text;
+        } else if (location) {
+            intent = 'location';
+            message = `long: ${location.longitude}  | lat: ${location.latitude}`
+        } else if (image) {
+            intent = message = `image`;
+        } else if (game) {
+            intent = message = `game`;
+        }
+        return await this.chatbase
+            .newMessage(CHATBASE_KEY, user_id.toString())
+            .setAsTypeUser()
+            .setTimestamp(Date.now().toString())
+            .setMessage(message.toString())
+            .setIntent(intent.toString())
+            .setMessageId(message_id.toString())
+            .send();
+    }
+
+    async trackBot({State, replyTo}, data) {
+        const {
+            message_id,
+            user_id
+        } = data;
+
+        return await this.chatbase
+            .newMessage(CHATBASE_KEY, user_id.toString())
+            .setAsTypeAgent()
+            .setTimestamp(Date.now().toString())
+            .setMessage(State.name.toString())
+            .setMessageId(message_id.toString())
+            .send();
     }
 };
