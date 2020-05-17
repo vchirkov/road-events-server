@@ -14,21 +14,21 @@ module.exports = class PinState extends State {
         const {type} = this.meta;
 
         if (phrase === 'back') {
-            await this.sendMessage('back_message', initialKeyboard);
-            await this.transitTo(require('./DefaultState'));
+            await this.sendMessage({message: 'back_message', keyboard: initialKeyboard});
+            await this.transitTo({State: require('./DefaultState')});
             return;
         }
 
         if (!type) {
-            await this.sendMessage('error_message', initialKeyboard);
-            await this.transitTo(require('./DefaultState'));
+            await this.sendMessage({message: 'error_message', keyboard: initialKeyboard});
+            await this.transitTo({State: require('./DefaultState')});
             return;
         }
 
         if (location) {
             await this.addPin(location, user_id, type);
-            await this.sendMessage('added_pin_message', initialKeyboard);
-            await this.transitTo(require('./DefaultState'));
+            await this.sendMessage({message: 'added_pin_message', keyboard:initialKeyboard});
+            await this.transitTo({State: require('./DefaultState')});
             return;
         }
     }

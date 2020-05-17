@@ -22,41 +22,41 @@ module.exports = class DefaultState extends State {
 
         switch (phrase) {
             case 'pin_patrol':
-                await this.sendMessage('pin_patrol_message', pinPatrolKeyboard);
-                await this.transitTo(require('./PinState'), {type: TYPE_PATROL});
+                await this.sendMessage({message: 'pin_patrol_message', keyboard: pinPatrolKeyboard});
+                await this.transitTo({State: require('./PinState'), meta: {type: TYPE_PATROL}});
                 return;
             case'pin_speed_cam':
-                await this.sendMessage('pin_speed_cam_message', pinSpeedCamKeyboard);
-                await this.transitTo(require('./PinState'), {type: TYPE_SPEED_CAM});
+                await this.sendMessage({message: 'pin_speed_cam_message', keyboard: pinSpeedCamKeyboard});
+                await this.transitTo({State: require('./PinState'), meta: {type: TYPE_SPEED_CAM}});
                 return;
             case 'pin_accident':
-                await this.sendMessage('pin_accident_message', pinAccidentKeyboard);
-                await this.transitTo(require('./PinState'), {type: TYPE_ROAD_WORKS});
+                await this.sendMessage({message: 'pin_accident_message', keyboard: pinAccidentKeyboard});
+                await this.transitTo({State: require('./PinState'), meta: {type: TYPE_ROAD_WORKS}});
                 return;
             case 'pin_road_works':
-                await this.sendMessage('pin_road_works_message', pinRoadWorksKeyboard);
-                await this.transitTo(require('./PinState'), {type: TYPE_ACCIDENT});
+                await this.sendMessage({message: 'pin_road_works_message', keyboard: pinRoadWorksKeyboard});
+                await this.transitTo({State: require('./PinState'), meta: {type: TYPE_ACCIDENT}});
                 return;
             case 'show_pins':
-                await this.sendGame(APP_NAME, openMapKeyboard, require('./ShowPinsState'));
+                await this.sendGame({name: APP_NAME, keyboard: openMapKeyboard, State: require('./ShowPinsState')});
                 return;
             case 'help':
                 await this.sendHelp();
                 return;
             default:
-                await this.sendMessage('error_message', initialKeyboard);
+                await this.sendMessage({message: 'error_message', keyboard: initialKeyboard});
                 return;
         }
     }
 
     async sendHelp() {
-        await this.sendMessage('help_geolocation');
-        await this.sendMessage('help_geolocation_ios');
-        await this.sendMessage('help_geolocation_android');
-        await this.sendMessage('help_no_controls');
-        await this.sendImage(await readFile(path.join(__dirname, './img/switch_kb.png')));
-        await this.sendMessage('help_no_controls_end');
-        await this.sendMessage('help_send_event');
-        await this.sendMessage('help_restart');
+        await this.sendMessage({message: 'help_geolocation'});
+        await this.sendMessage({message: 'help_geolocation_ios'});
+        await this.sendMessage({message: 'help_geolocation_android'});
+        await this.sendMessage({message: 'help_no_controls'});
+        await this.sendImage({image: await readFile(path.join(__dirname, './img/switch_kb.png'))});
+        await this.sendMessage({message: 'help_no_controls_end'});
+        await this.sendMessage({message: 'help_send_event'});
+        await this.sendMessage({message: 'help_restart'});
     }
 };

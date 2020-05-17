@@ -8,14 +8,14 @@ module.exports = class InstructionGeoState extends State {
         const {phrase} = this.data;
 
         if (phrase === 'next') {
-            await this.sendMessage('instruction_map', instructionOpenMapKeyboard);
-            await this.transitTo(require('./InstructionMapState'));
+            await this.sendMessage({message: 'instruction_map', keyboard: instructionOpenMapKeyboard});
+            await this.transitTo({State: require('./InstructionMapState')});
             return;
         }
 
         if (phrase === 'skip') {
-            await this.sendMessage('instruction_skip', initialKeyboard);
-            await this.transitTo(require('../DefaultState'));
+            await this.sendMessage({message: 'instruction_skip', keyboard: initialKeyboard});
+            await this.transitTo({State: require('../DefaultState')});
         }
     }
 };

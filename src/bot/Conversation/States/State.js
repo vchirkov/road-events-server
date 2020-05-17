@@ -1,5 +1,3 @@
-const {translate} = require('../../phrases');
-
 module.exports = class State {
     constructor(data, context, meta) {
         this.meta = meta;
@@ -11,41 +9,19 @@ module.exports = class State {
         throw new Error(`this state is abstract, please use inheritor with 'handle', 'keyboard' and 'message' overwritten`);
     }
 
-    async sendMessage(message, keyboard) {
-        const {bot, msg, locale} = this.data;
-
-        const form = {
-            reply_markup: keyboard ? {
-                keyboard: keyboard(locale),
-                resize_keyboard: true
-            } : undefined,
-            parse_mode: 'Markdown'
-        };
-
-        return bot.sendMessage(msg.chat.id, translate(message, locale), form);
+    async sendMessage({message, keyboard}) {
+        this.context.sendMessage({message, keyboard}, this.data);
     }
 
-    async sendImage(image) {
-        const {bot, msg, locale} = this.data;
-
-        return bot.sendPhoto(msg.chat.id, image);
+    async sendImage({image}) {
+        return this.context.sendImage({image}, this.data);
     }
 
-    async sendGame(name, keyboard, state) {
-        const {bot, msg, locale} = this.data;
-
-        const form = keyboard ? {
-            reply_markup: {
-                inline_keyboard: keyboard(locale)
-            }
-        } : undefined;
-
-        const {message_id} = await bot.sendGame(msg.chat.id, name, form);
-
-        return await this.context.saveQueryState(message_id, state);
+    async sendGame({name, keyboard, State}) {
+        return this.context.sendGame({name, keyboard, State}, this.data);
     }
 
-    async transitTo(State, meta) {
-        return this.context.transitTo(State, meta, this.data);
+    async transitTo({State, meta}) {
+        return this.context.transitTo({State, meta}, this.data);
     }
 };

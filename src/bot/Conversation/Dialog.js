@@ -1,5 +1,5 @@
 const {stateDAO, userDAO} = require('../../db');
-const {revert} = require('../phrases');
+const {revert, translate} = require('../phrases');
 
 module.exports = class Dialog {
     constructor(bot, states = [], InitialState, ErrorState) {
@@ -91,11 +91,6 @@ module.exports = class Dialog {
         }
     }
 
-    async transitTo(State, meta, data) {
-        const {user_id, chat_id} = data;
-        await this.stateDAO.setState({user_id, chat_id}, State, meta);
-    }
-
     async saveQueryState(message_id, state) {
         await this.stateDAO.setState({message_id}, state);
     }
@@ -106,5 +101,44 @@ module.exports = class Dialog {
 
     register(State) {
         this.states[State.name] = State;
+    }
+
+    async transitTo({State, meta}, data) {
+        const {user_id, chat_id} = data;
+        await this.stateDAO.setState({user_id, chat_id}, State, meta);
+    }
+
+    async sendMessage({message, keyboard}, data) {
+        const {msg, locale} = data;
+
+        const form = {
+            reply_markup: keyboard ? {
+                keyboard: keyboard(locale),
+                resize_keyboard: true
+            } : undefined,
+            parse_mode: 'Markdown'
+        };
+
+        return this.bot.sendMessage(msg.chat.id, translate(message, locale), form);
+    }
+
+    async sendImage({image}, data) {
+        const {msg} = data;
+
+        return this.bot.sendPhoto(msg.chat.id, image);
+    }
+
+    async sendGame({name, keyboard, State}, data) {
+        const {msg, locale} = data;
+
+        const form = keyboard ? {
+            reply_markup: {
+                inline_keyboard: keyboard(locale)
+            }
+        } : undefined;
+
+        const {message_id} = await this.bot.sendGame(msg.chat.id, name, form);
+
+        return await this.saveQueryState(message_id, State);
     }
 };
